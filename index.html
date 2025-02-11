@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase - Your One-Stop Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-blue-600">ShopEase</a>
+                </div>
+                <div class="flex-1 max-w-xl mx-4">
+                    <div class="relative">
+                        <input type="search" id="searchInput" class="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search products...">
+                        <div class="absolute left-3 top-2.5">
+                            <i class="bi bi-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="cartBtn" class="relative">
+                        <i class="bi bi-cart text-2xl"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                    </button>
+                    <button id="loginBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Login</button>
+                    <button id="registerBtn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Register</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Filters Sidebar -->
+            <aside class="w-full md:w-64 bg-white p-4 rounded-lg shadow-sm">
+                <h2 class="text-lg font-semibold mb-4">Filters</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-medium mb-2">Categories</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="category-filter" value="electronics">
+                                <span class="ml-2">Electronics</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="category-filter" value="clothing">
+                                <span class="ml-2">Clothing</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="category-filter" value="books">
+                                <span class="ml-2">Books</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium mb-2">Price Range</h3>
+                        <input type="range" id="priceRange" min="0" max="1000" class="w-full">
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>$0</span>
+                            <span id="priceValue">$500</span>
+                            <span>$1000</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Products Grid -->
+            <div class="flex-1">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold">All Products</h1>
+                    <select id="sortSelect" class="border rounded-lg px-3 py-2">
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="name-asc">Name: A to Z</option>
+                        <option value="name-desc">Name: Z to A</option>
+                    </select>
+                </div>
+                <div id="productsGrid" class="product-grid">
+                    <!-- Products will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h2 class="text-xl font-bold mb-4">Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" required class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" required class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Login</button>
+            </form>
+            <button class="mt-4 text-gray-600 hover:underline closeModal">Close</button>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h2 class="text-xl font-bold mb-4">Shopping Cart</h2>
+            <div id="cartItems" class="space-y-4 max-h-96 overflow-y-auto">
+                <!-- Cart items will be dynamically inserted here -->
+            </div>
+            <div class="border-t mt-4 pt-4">
+                <div class="flex justify-between font-bold">
+                    <span>Total:</span>
+                    <span id="cartTotal">$0.00</span>
+                </div>
+                <button id="checkoutBtn" class="w-full bg-blue-600 text-white py-2 rounded-lg mt-4 hover:bg-blue-700">Checkout</button>
+                <button class="mt-2 w-full text-gray-600 hover:underline closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample product data
+        const products = [
+            { id: 1, name: 'Smartphone', price: 599, category: 'electronics', image: 'https://source.unsplash.com/random/300x300/?smartphone' },
+            { id: 2, name: 'Laptop', price: 999, category: 'electronics', image: 'https://source.unsplash.com/random/300x300/?laptop' },
+            { id: 3, name: 'T-Shirt', price: 29, category: 'clothing', image: 'https://source.unsplash.com/random/300x300/?tshirt' },
+            { id: 4, name: 'Jeans', price: 49, category: 'clothing', image: 'https://source.unsplash.com/random/300x300/?jeans' },
+            { id: 5, name: 'Novel', price: 19, category: 'books', image: 'https://source.unsplash.com/random/300x300/?book' },
+        ];
+
+        let cart = [];
+        let isLoggedIn = false;
+        let isAdmin = false;
+
+        // DOM Elements
+        const productsGrid = document.getElementById('productsGrid');
+        const loginBtn = document.getElementById('loginBtn');
+        const cartBtn = document.getElementById('cartBtn');
+        const loginModal = document.getElementById('loginModal');
+        const cartModal = document.getElementById('cartModal');
+        const closeModals = document.querySelectorAll('.closeModal');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilters = document.querySelectorAll('.category-filter');
+        const priceRange = document.getElementById('priceRange');
+        const sortSelect = document.getElementById('sortSelect');
+
+        // Render products
+        function renderProducts(productsToRender = products) {
+            productsGrid.innerHTML = productsToRender.map(product => `
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="font-semibold">${product.name}</h3>
+                    <p class="text-gray-600">$${product.price}</p>
+                    <button onclick="addToCart(${product.id})" class="mt-2 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                        Add to Cart
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Cart functionality
+        function addToCart(productId) {
+            if (!isLoggedIn) {
+                alert('Please login to add items to cart');
+                return;
+            }
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+            
+            if (cartItem) {
+                cartItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const cartCount = document.getElementById('cartCount');
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm)
+            );
+            renderProducts(filteredProducts);
+        });
+
+        // Filter functionality
+        function applyFilters() {
+            const selectedCategories = Array.from(categoryFilters)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            
+            const maxPrice = parseInt(priceRange.value);
+            
+            let filteredProducts = products;
+            
+            if (selectedCategories.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    selectedCategories.includes(product.category)
+                );
+            }
+            
+            filteredProducts = filteredProducts.filter(product => 
+                product.price <= maxPrice
+            );
+            
+            renderProducts(filteredProducts);
+        }
+
+        categoryFilters.forEach(filter => 
+            filter.addEventListener('change', applyFilters)
+        );
+
+        priceRange.addEventListener('input', (e) => {
+            document.getElementById('priceValue').textContent = `$${e.target.value}`;
+            applyFilters();
+        });
+
+        // Sort functionality
+        sortSelect.addEventListener('change', (e) => {
+            const sortedProducts = [...products];
+            switch(e.target.value) {
+                case 'price-asc':
+                    sortedProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-desc':
+                    sortedProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'name-asc':
+                    sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name-desc':
+                    sortedProducts.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+            }
+            renderProducts(sortedProducts);
+        });
+
+        // Modal handling
+        loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+        cartBtn.addEventListener('click', () => cartModal.classList.remove('hidden'));
+        closeModals.forEach(btn => {
+            btn.addEventListener('click', () => {
+                loginModal.classList.add('hidden');
+                cartModal.classList.add('hidden');
+            });
+        });
+
+        // Initialize
+        renderProducts();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
